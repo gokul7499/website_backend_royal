@@ -8,7 +8,7 @@ router.get('/user', (req, res) => {
   });
 router.get('/visitor', async (req, res) => {
 
-    res.send("Heelo worlds")
+   
     try {
         // Check visitor is aleready come
         const existingVisitor = await Visitor.findOne({ ipAddress: req.ip });
