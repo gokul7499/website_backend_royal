@@ -1,35 +1,49 @@
 const express = require('express');
-const Visitor = require('../models/visitor'); // Mongoose Visitor Model
+const Visitor = require('../models/visitor');
 const router = express.Router();
 
-// Increment visitor count on every new visit
-router.post('/visitor', async (req, res) => {
-  try {
-    const ip = req.ip; // Get the visitor's IP address
-    const existingVisitor = await Visitor.findOne({ ipAddress: ip });
+// GET visitor count and store visitor data
+router.get('/user', (req, res) => {
+    res.json({ name: 'gokul gudaghe' });
+  });
+router.get('/visitor', async (req, res) => {
 
-    if (!existingVisitor) {
-      const newVisitor = new Visitor({ ipAddress: ip });
-      await newVisitor.save();
+    res.send("Heelo worlds")
+    try {
+        // Check visitor is aleready come
+        const existingVisitor = await Visitor.findOne({ ipAddress: req.ip });
+
+        if (!existingVisitor) {
+            // Create a new visitor document only if it doesn't exist
+            const visitor = new Visitor({
+                ipAddress: req.ip, // Track the IP address of the visitor
+            });
+
+            // Save visitor data 
+            await visitor.save();
+        }
+
+        // Get the total number of unique visitors
+        const visitorCount = await Visitor.countDocuments();
+
+        res.status(200).json({  visitorCount });
+    } catch (error) {
+        console.error('Error storing visitor data:', error);
+        res.status(500).json({ suceess:false , message: 'Error storing visitor data', error });
     }
-
-    const visitorCount = await Visitor.countDocuments();
-    res.status(200).json({ visitorCount });
-  } catch (error) {
-    console.error('Error incrementing visitor count:', error);
-    res.status(500).json({ message: 'Error incrementing visitor count', error });
-  }
 });
 
-// Get the current visitor count
-router.get('/visitor/count', async (req, res) => {
-  try {
-    const visitorCount = await Visitor.countDocuments();
-    res.status(200).json({ visitorCount });
-  } catch (error) {
-    console.error('Error fetching visitor count:', error);
-    res.status(500).json({ message: 'Error fetching visitor count', error });
-  }
+// this api show visitor count
+router.post('/visitor/count', async (req, res) => {
+    try {
+        // Get the total number of unique visitors
+        const visitorCount = await Visitor.countDocuments();
+
+        res.status(200).json({ visitorCount }); 
+    } catch (error) {
+        console.error('Error fetching visitor count:', error);
+        res.status(500).json({ message: 'Error fetching visitor count', error });
+    }
 });
 
 module.exports = router;
