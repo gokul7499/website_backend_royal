@@ -2,13 +2,10 @@ const express = require('express');
 const Visitor = require('../models/visitor');
 const router = express.Router();
 
-// GET visitor count and store visitor data
-
+// Store visitor data and return visitor count
 router.get('/visitor', async (req, res) => {
-
-    res.send("Heelo worlds")
     try {
-        // Check visitor is aleready come
+        // Check if the visitor is already recorded by IP
         const existingVisitor = await Visitor.findOne({ ipAddress: req.ip });
 
         if (!existingVisitor) {
@@ -17,30 +14,38 @@ router.get('/visitor', async (req, res) => {
                 ipAddress: req.ip, // Track the IP address of the visitor
             });
 
-            // Save visitor data 
+            // Save visitor data to the database
             await visitor.save();
         }
 
-        // Get the total number of unique visitors
+        // Get the total number of unique visitors (count documents)
         const visitorCount = await Visitor.countDocuments();
 
-        res.status(200).json({  visitorCount });
+        res.status(200).json({ visitorCount });
     } catch (error) {
         console.error('Error storing visitor data:', error);
-        res.status(500).json({ suceess:false , message: 'Error storing visitor data', error });
+        res.status(500).json({
+            success: false,
+            message: 'Error storing visitor data',
+            error: error.message,
+        });
     }
 });
 
-// this api show visitor count
-router.post('/visitor/count', async (req, res) => {
+// This API shows the total number of visitors count (can be called on page load)
+router.get('/visitor/count', async (req, res) => {
     try {
         // Get the total number of unique visitors
         const visitorCount = await Visitor.countDocuments();
 
-        res.status(200).json({ visitorCount }); 
+        res.status(200).json({ visitorCount });
     } catch (error) {
         console.error('Error fetching visitor count:', error);
-        res.status(500).json({ message: 'Error fetching visitor count', error });
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching visitor count',
+            error: error.message,
+        });
     }
 });
 
