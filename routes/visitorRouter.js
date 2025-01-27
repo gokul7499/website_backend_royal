@@ -2,44 +2,33 @@ const express = require('express');
 const Visitor = require('../models/visitor');
 const router = express.Router();
 
-// GET visitor count and store visitor data
-router.get('/user', (req, res) => {
-    res.json({ name: 'gokul gudaghe' });
-  });
+// Save Visitor and Get Updated Visitor Count
 router.get('/visitor', async (req, res) => {
-
-   
     try {
-        // Check visitor is aleready come
-        const existingVisitor = await Visitor.findOne({ ipAddress: req.ip });
+        const ipAddress = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+
+        // Check if the visitor already exists
+        const existingVisitor = await Visitor.findOne({ ipAddress });
 
         if (!existingVisitor) {
-            // Create a new visitor document only if it doesn't exist
-            const visitor = new Visitor({
-                ipAddress: req.ip, // Track the IP address of the visitor
-            });
-
-            // Save visitor data 
+            const visitor = new Visitor({ ipAddress });
             await visitor.save();
         }
 
-        // Get the total number of unique visitors
+        // Get total unique visitor count
         const visitorCount = await Visitor.countDocuments();
-
-        res.status(200).json({  visitorCount });
+        res.status(200).json({ visitorCount });
     } catch (error) {
         console.error('Error storing visitor data:', error);
-        res.status(500).json({ suceess:false , message: 'Error storing visitor data', error });
+        res.status(500).json({ success: false, message: 'Error storing visitor data', error });
     }
 });
 
-// this api show visitor count
-router.post('/visitor/count', async (req, res) => {
+// Fetch Visitor Count Only
+router.get('/visitor/count', async (req, res) => {
     try {
-        // Get the total number of unique visitors
         const visitorCount = await Visitor.countDocuments();
-
-        res.status(200).json({ visitorCount }); 
+        res.status(200).json({ visitorCount });
     } catch (error) {
         console.error('Error fetching visitor count:', error);
         res.status(500).json({ message: 'Error fetching visitor count', error });
