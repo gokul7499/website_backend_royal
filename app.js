@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const contactRoutes = require('./routes/contactRoute');
 const visitorRoutes = require('./routes/visitorRouter');
+const emailRoutes = require('./routes/emailRoute');
 const app = express();
 
 // Middleware
@@ -20,6 +21,7 @@ mongoose
 // Routes
 app.use('/api', contactRoutes);
 app.use('/api', visitorRoutes);
+app.use('/api', emailRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
