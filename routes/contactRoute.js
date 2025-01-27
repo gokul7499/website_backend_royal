@@ -1,16 +1,10 @@
 const express = require('express');
 const Contact = require('../models/contact');
+const retry = require('async-retry');  // You'll need to install async-retry
 const router = express.Router();
 
 router.post('/contact', async (req, res) => {
-    const {
-        customerName,
-        contactNumber,
-        emailAddress,
-        city,
-        dist,
-        pincode,
-    } = req.body;
+    const { customerName, contactNumber, emailAddress, city, dist, pincode } = req.body;
 
     try {
         // Validate required fields
@@ -28,8 +22,17 @@ router.post('/contact', async (req, res) => {
             pincode,
         });
 
-        // Save to database
-        await contact.save();
+        // Retry logic to save the contact
+        await retry(async () => {
+            // Save to database with retry logic
+            await contact.save();
+        }, {
+            retries: 3,  // Retry 3 times
+            minTimeout: 1000,  // Wait 1 second between retries
+            onRetry: (error, attempt) => {
+                console.log(`Attempt ${attempt} failed. Retrying...`);
+            },
+        });
 
         res.status(201).json({
             success: true,
