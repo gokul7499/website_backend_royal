@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const emailSchema = new mongoose.Schema({
-    emailAddress: { type: String, unique: true, required: true },
-    subscribedAt: { type: Date, default: Date.now },
+  email: { type: String, unique: true, required: true }, // Change field to match the route
+  subscribedAt: { type: Date, default: Date.now },
 });
 
 const Email = mongoose.model('Email', emailSchema);

@@ -1,28 +1,32 @@
 const express = require('express');
-const Email = require('../models/email');
 const router = express.Router();
+const Subscriber = require('../models/email'); // Import the email model
 
+// Subscription Route
 router.post('/subscribe', async (req, res) => {
-    const { emailAddress } = req.body;
+  const { email } = req.body; // Extract email from request body
 
-    try {
-        // Check if the email is already subscribed
-        const existingEmail = await Email.findOne({ emailAddress });
-        if (existingEmail) {
-            return res.status(400).json({ success: false, message: 'Email address is already subscribed' });
-        }
+  // Validate email presence
+  if (!email) {
+    return res.status(400).json({ message: 'Email is required' });
+  }
 
-        // Create a new email document
-        const email = new Email({ emailAddress });
-
-        // Save the email
-        await email.save();
-
-        res.status(201).json({ success: true, message: 'Email subscribed successfully', data: email });
-    } catch (error) {
-        console.error('Error storing email:', error);
-        res.status(500).json({ success: false, message: 'Error storing email', error });
+  try {
+    // Check if the email is already subscribed
+    const existingSubscriber = await Subscriber.findOne({ email });
+    if (existingSubscriber) {
+      return res.status(400).json({ message: 'Email is already subscribed' });
     }
+
+    // Save the new email to the database
+    const newSubscriber = new Subscriber({ email });
+    await newSubscriber.save();
+
+    res.status(200).json({ message: 'Subscribed successfully!' });
+  } catch (error) {
+    console.error('Error subscribing email:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 module.exports = router;
