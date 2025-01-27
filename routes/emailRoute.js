@@ -3,17 +3,17 @@ const Email = require('../models/email');
 const router = express.Router();
 
 router.post('/subscribe', async (req, res) => {
-    const { emailAddress } = req.body;
+    const { email } = req.body;
 
     try {
         // Check if the email is already subscribed
-        const existingEmail = await Email.findOne({ emailAddress });
+        const existingEmail = await Email.findOne({ email });
         if (existingEmail) {
             return res.status(400).json({ success: false, message: 'Email address is already subscribed' });
         }
 
         // Create a new email document
-        const email = new Email({ emailAddress });
+        const email = new Email({ email });
 
         // Save the email
         await email.save();
