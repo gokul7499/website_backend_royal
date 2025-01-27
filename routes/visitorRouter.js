@@ -1,15 +1,15 @@
 const express = require('express');
-const Visitor = require('../models/visitor');
+const Visitor = require('../models/visitor'); // Make sure you have a Visitor model
 const router = express.Router();
 
-// Store visitor data and return visitor count
+// Track unique visitors and return the visitor count
 router.get('/visitor', async (req, res) => {
     try {
-        // Check if the visitor is already recorded by IP
+        // Check if the visitor (based on IP) already exists
         const existingVisitor = await Visitor.findOne({ ipAddress: req.ip });
 
         if (!existingVisitor) {
-            // Create a new visitor document only if it doesn't exist
+            // If the visitor doesn't exist, create a new record for this IP
             const visitor = new Visitor({
                 ipAddress: req.ip, // Track the IP address of the visitor
             });
@@ -18,7 +18,7 @@ router.get('/visitor', async (req, res) => {
             await visitor.save();
         }
 
-        // Get the total number of unique visitors (count documents)
+        // Get the total number of unique visitors by counting unique documents in the Visitor collection
         const visitorCount = await Visitor.countDocuments();
 
         res.status(200).json({ visitorCount });
@@ -32,7 +32,7 @@ router.get('/visitor', async (req, res) => {
     }
 });
 
-// This API shows the total number of visitors count (can be called on page load)
+// This API will return the total number of unique visitors
 router.get('/visitor/count', async (req, res) => {
     try {
         // Get the total number of unique visitors
