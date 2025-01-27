@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const contactRoutes = require('./routes/contactRoute');
-
+const visitorRoutes = require('./routes/visitorRouter');
 const app = express();
 
 // Middleware
@@ -19,6 +19,7 @@ mongoose
 
 // Routes
 app.use('/api', contactRoutes);
+app.use('/api', visitorRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
