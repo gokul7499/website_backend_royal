@@ -11,6 +11,7 @@ router.get('/visitor', async (req, res) => {
         const existingVisitor = await Visitor.findOne({ ipAddress });
 
         if (!existingVisitor) {
+            // Save new visitor only if it doesn't exist
             const visitor = new Visitor({ ipAddress });
             await visitor.save();
         }
