@@ -2,6 +2,7 @@ const express = require('express');
 const Visitor = require('../models/visitor');
 const router = express.Router();
 
+// Time limit for considering a new visit (24 hours)
 const TIME_LIMIT = 24 * 60 * 60 * 1000;
 
 // Save Visitor and Get Updated Visitor Count
@@ -12,19 +13,19 @@ router.get('/visitor', async (req, res) => {
         // Check if visitor exists within the last 24 hours
         const existingVisitor = await Visitor.findOne({
             ipAddress,
-            visitTime: { $gt: new Date(Date.now() - TIME_LIMIT) }, // Check last 24 hours
+            visitTime: { $gt: new Date(Date.now() - TIME_LIMIT) }, // Check if visited in the last 24 hours
         });
 
         if (!existingVisitor) {
-            // Add new visitor or update visit time if outside the 24-hour window
-            await Visitor.updateOne(
-                { ipAddress },
-                { ipAddress, visitTime: new Date() },
-                { upsert: true } // Insert if not exists
-            );
+            // Add a new visitor if it doesn't exist in the last 24 hours
+            const newVisitor = new Visitor({
+                ipAddress,
+                visitTime: new Date(),
+            });
+            await newVisitor.save();
         }
 
-        // Get total unique visitor count
+        // Get the total unique visitor count
         const visitorCount = await Visitor.countDocuments();
         res.status(200).json({ visitorCount });
     } catch (error) {
