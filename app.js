@@ -5,7 +5,7 @@ const cors = require('cors');
 const contactRoutes = require('./routes/contactRoute');
 const visitorRoutes = require('./routes/visitorRouter');
 const emailRoutes = require('./routes/emailRoute');
-const contactFormRoutes=require('./routes/contactFormRoutes')
+
 const app = express();
 
 // Middleware
@@ -23,7 +23,7 @@ mongoose
 app.use('/api', contactRoutes);
 app.use('/api', visitorRoutes);
 app.use('/api', emailRoutes);
-app.use('/api', contactFormRoutes);
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
