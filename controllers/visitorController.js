@@ -1,8 +1,8 @@
-const Visitor = require("../models/visitor");
+const Visitor = require('../models/visitor');
 
 // Controller to record a visitor
 const recordVisitor = async (req, res) => {
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
   try {
     // Check if visitor already exists
@@ -11,13 +11,13 @@ const recordVisitor = async (req, res) => {
       await Visitor.create({ ipAddress: ip });
     }
     const totalVisitors = await Visitor.countDocuments();
-    res.send({
-      message: "Visitor recorded successfully!",
+    res.status(200).send({
+      message: 'Visitor recorded successfully!',
       totalVisitors,
       visitorIP: ip,
     });
   } catch (error) {
-    res.status(500).send({ message: "Error recording visitor", error });
+    res.status(500).send({ message: 'Error recording visitor', error });
   }
 };
 
@@ -25,9 +25,9 @@ const recordVisitor = async (req, res) => {
 const getVisitorCount = async (req, res) => {
   try {
     const totalVisitors = await Visitor.countDocuments();
-    res.send({ totalVisitors });
+    res.status(200).send({ totalVisitors });
   } catch (error) {
-    res.status(500).send({ message: "Error fetching visitor count", error });
+    res.status(500).send({ message: 'Error fetching visitor count', error });
   }
 };
 

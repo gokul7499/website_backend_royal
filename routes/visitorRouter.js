@@ -3,7 +3,7 @@ const { recordVisitor, getVisitorCount } = require("../controllers/visitorContro
 
 const router = express.Router();
 
-router.get("/", recordVisitor);
-router.get("/count", getVisitorCount);
+router.get('/count', recordVisitor); // Records visitor and returns updated count
+router.get('/visitor/count', getVisitorCount);
 
 module.exports = router;
