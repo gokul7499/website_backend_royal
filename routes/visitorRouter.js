@@ -2,7 +2,6 @@ const express = require('express');
 const Visitor = require('../models/visitor');
 const router = express.Router();
 
-// Time limit for considering a new visit (24 hours)
 const TIME_LIMIT = 24 * 60 * 60 * 1000;
 
 // Save Visitor and Get Updated Visitor Count
